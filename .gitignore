@@ -1,3 +1,4 @@
 ladybird/
 .ruby-lsp/
 *.log*
+*.rpm

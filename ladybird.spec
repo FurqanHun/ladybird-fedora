@@ -4,10 +4,11 @@
 %global _lto_cflags %{nil}
 %define _build_id_links none
 %define _find_debuginfo_dwz_opts %{nil}
+%define _binary_payload w9T0.xzdio
 
 Name:           ladybird
 Version:        %{tag}
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A truly independent web browser with a novel engine
 License:        BSD-2-Clause
 URL:            https://ladybird.org/
@@ -119,12 +120,20 @@ DESTDIR=%{buildroot} cmake --install Build
 # Create lowercase symlink for convenience
 ln -sf Ladybird %{buildroot}%{_bindir}/ladybird
 
+# Remove standalone developer test utilities not needed in browser package
+rm -f %{buildroot}%{_bindir}/js
+rm -f %{buildroot}%{_bindir}/wasm
+
 # Remove development cmake files if installed
 rm -rf %{buildroot}%{_datadir}/Ladybird
+rm -f %{buildroot}%{_datadir}/Lagom/*.cmake
 
 # Clean up static libraries and stray COMMIT file not needed in binary package
 rm -rf %{buildroot}%{_libdir}
 rm -f %{buildroot}%{_prefix}/COMMIT
+
+# Keep symbol tables for readable crash backtraces in pre-alpha; uncomment to strip:
+# find %{buildroot}%{_bindir} %{buildroot}%{_libexecdir} -type f -exec strip --strip-all {} + 2>/dev/null || :
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/org.ladybird.Ladybird.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.ladybird.Ladybird.metainfo.xml
@@ -141,6 +150,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.ladyb
 %{_datadir}/metainfo/org.ladybird.Ladybird.metainfo.xml
 
 %changelog
+* Mon Nov 16 2026 FurqanHun <furqanhun@proton.me> - 2026.46.2-3
+- Remove standalone developer js and wasm test runners
+- Clean up unused Lagom development cmake files from assets directory
+- Use xz -9 payload compression matching upstream CPack release archive
+
 * Sun Nov 15 2026 FurqanHun <furqanhun@proton.me> - 2026.46.2-2
 - Hide static archive symbols with --exclude-libs,ALL to fix Fontconfig collision with Qt plugins
 - Fix CMAKE_INSTALL_LIBEXECDIR to relative 'libexec' so Hub helper is located correctly
