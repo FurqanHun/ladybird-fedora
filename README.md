@@ -1,6 +1,6 @@
 # Ladybird for Fedora
 
-This repo got the recipe to build Ladybird on fedora. The spec file uses CalVer release tags from upstream repo. And also uses the upstream profile for Distributions.
+This repo got the recipe to build Ladybird on Fedora. The spec file uses official CalVer release tags and sticks as closely as possible to upstream's official Distribution CMake preset, only adding what's needed for Fedora packaging.
 
 > [!WARNING]
 > Ladybird is a pre-alpha browser. DON'T USE IT FOR DAILY DRIVING OR BANKING OR ANYTHING IMPORTANT. It doesn't even have all the basic web security features yet.
