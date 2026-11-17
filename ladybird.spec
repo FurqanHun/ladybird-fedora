@@ -1,5 +1,6 @@
 %global debug_package %{nil}
-%global tag 2026.46.2
+%global tag 2026.47.1
+# Commit: 220629eac48d41dd3a88993775676a18cdab6fb4
 %global toolchain clang
 %global _lto_cflags %{nil}
 %define _build_id_links none
@@ -8,7 +9,7 @@
 
 Name:           ladybird
 Version:        %{tag}
-Release:        3%{?dist}
+Release:        1%{?dist}
 Summary:        A truly independent web browser with a novel engine
 License:        BSD-2-Clause
 URL:            https://ladybird.org/
@@ -150,6 +151,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.ladyb
 %{_datadir}/metainfo/org.ladybird.Ladybird.metainfo.xml
 
 %changelog
+* Tue Nov 17 2026 FurqanHun <furqanhun@proton.me> - 2026.47.1-1
+- Update to official release tag 2026.47.1
+
 * Mon Nov 16 2026 FurqanHun <furqanhun@proton.me> - 2026.46.2-3
 - Remove standalone developer js and wasm test runners
 - Clean up unused Lagom development cmake files from assets directory

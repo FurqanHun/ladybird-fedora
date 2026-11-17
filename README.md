@@ -12,12 +12,15 @@ This repo got the recipe to build Ladybird on Fedora. The spec file uses officia
 
 Ladybird can be installed through the github artifacts of upstream repo: https://github.com/LadybirdBrowser/ladybird/actions/workflows/build-release.yml
 
-Or you can use my copr repo which i'd occasionally update until Ladybird goes stable and gets shipped in fedora repos:
+Or you can use my copr repo which i'd occasionally update (as time permits) until Ladybird goes stable and gets shipped in fedora repos:
 
 ```sh
 sudo dnf copr enable furqanhun/ladybird-test
 sudo dnf install ladybird
 ```
+
+> [!NOTE]
+> Upstream Ladybird routinely deletes older CalVer release tags from GitHub whenever a new release is published to prevent users from compiling outdated pre-alpha code. Because of this, only the latest upstream release can be fetched from GitHub archive URLs.
 
 ---
 
