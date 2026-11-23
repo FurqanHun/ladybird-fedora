@@ -3,16 +3,27 @@
 This repo got the recipe to build Ladybird on Fedora. The spec file uses official CalVer release tags and sticks as closely as possible to upstream's official Distribution CMake preset, only adding what's needed for Fedora packaging.
 
 > [!WARNING]
-> Ladybird is a pre-alpha browser. DON'T USE IT FOR DAILY DRIVING OR BANKING OR ANYTHING IMPORTANT. It doesn't even have all the basic web security features yet.
+> Ladybird is an alpha browser. DON'T USE IT FOR DAILY DRIVING OR BANKING OR ANYTHING IMPORTANT. It doesn't even have all the basic web security features yet.
 
 
 ---
 
 ## Installation
 
-Ladybird can be installed through the github artifacts of upstream repo: https://github.com/LadybirdBrowser/ladybird/actions/workflows/build-release.yml
+### Official Upstream Repository (Recommended)
 
-Or you can use my copr repo which i'd occasionally update (as time permits) until Ladybird goes stable and gets shipped in fedora repos:
+As of Alpha 1 (`2026.47.7`), Ladybird provides official signed RPM repositories for Fedora 44 and 45:
+
+```sh
+sudo dnf config-manager addrepo --from-repofile='https://rpm.ladybird.org/ladybird.repo'
+sudo dnf install ladybird
+```
+
+Upstream packages install as a self-contained bundle into `/opt/ladybird`.
+
+### Community Copr
+
+If you are on Fedora 43, or prefer a native packaging layout (`/usr/bin`, `/usr/libexec`, `/usr/lib64`, `/usr/share`) with unstripped symbol tables for readable backtraces, you can use the Copr package built from this spec (occasionally updated as time permits):
 
 ```sh
 sudo dnf copr enable furqanhun/ladybird-test
@@ -20,7 +31,7 @@ sudo dnf install ladybird
 ```
 
 > [!NOTE]
-> Upstream Ladybird routinely deletes older CalVer release tags from GitHub whenever a new release is published to prevent users from compiling outdated pre-alpha code. Because of this, only the latest upstream release can be fetched from GitHub archive URLs.
+> Upstream Ladybird routinely deletes older CalVer release tags from GitHub whenever a new release is published to prevent users from compiling outdated alpha code. Because of this, only the latest upstream release can be fetched from GitHub archive URLs.
 
 ---
 
@@ -28,18 +39,17 @@ sudo dnf install ladybird
 
 There are two main reasons:
 
-First is rust and `-Dwarnings`. upstream ladybird passes `-Dwarnings` to `rustc` by default in their cmake files (`Meta/CMake/rust_crate.cmake`). Rawhide ships the newest compiler versions, and whenever a new rust release deprecates an api, rustc throws a warning. even though the code works completely fine, `-Dwarnings` treats any warning as a hard error and kills the build. we can patch this pretty easily by passing `-Adeprecated` so it ignores deprecation warnings, but that leads right into the second problem.
+First is rust and `-Dwarnings`. upstream ladybird passes `-Dwarnings` to `rustc` by default in their cmake files (`Meta/CMake/rust_crate.cmake`). Rawhide ships the newest compiler versions, and whenever a new rust release deprecates an api, rustc throws a warning. even though the code works completely fine, `-Dwarnings` treats any warning as a hard error and kills the build. we can patch this pretty easily by passing `-Adeprecated` so it ignores deprecation warnings, but it's cleaner to wait for upstream to relax it.
 
-The bigger blocker is cargo. cargo 1.100 dropped an internal cache file called `root-output`. Ladybird's build system (`Meta/CMake/sync_rust_ffi_header.cmake`) expects `root-output` to be there so it can find where cargo put `RustFFI.h` and sync it. with newer cargo, that file doesn't exist anymore, so cmake crashes when it can't find the header. and because fedora's rawhide repos only keep the single newest version of packages, we can't just tell dnf or copr to grab an older cargo/rust snapshot.
+The second thing was cargo 1.100. cargo dropped an internal cache file called `root-output`, which cmake (`Meta/CMake/sync_rust_ffi_header.cmake`) was expecting to find `RustFFI.h`. upstream actually fixed this on master (commit `349b655`), but didn't cherry-pick it into the `2026.47.7` alpha tag. and since fedora pushed cargo 1.100 to fedora 43, 44, and 45 as well, I just backported that cmake fix in `%prep` so the build doesn't crash on cargo.
 
-That can be patched too tbh, but it's better to wait. So until upstream updates their cmake scripts to stop relying on internal cargo files, rawhide builds will be paused. Fedora 43, 44, and 45 work fine.
-
+So until upstream adds a way to relax `-Dwarnings` for distro builds (or I decide to patch in `-Adeprecated`), rawhide builds will stay paused (for now atleast). Fedora 43, 44, and 45 work fine.
 
 ---
 
-## Pre-Alpha Warning & Security
+## Alpha Warning & Security
 
-Once again, Ladybird is a pre-alpha browser that is still very early in development.
+Once again, Ladybird is an alpha browser that is still early in development.
 
 Do not use this as your daily driver, and definitely do not use it for banking, personal email, passwords, or anything sensitive.
 

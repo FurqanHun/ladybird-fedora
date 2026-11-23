@@ -1,11 +1,12 @@
 %global debug_package %{nil}
-%global tag 2026.47.1
-# Commit: 220629eac48d41dd3a88993775676a18cdab6fb4
+%global tag 2026.47.7
+# Commit: 4e9acf4c02ca23239fe32224a303dcea4614562b
 %global toolchain clang
 %global _lto_cflags %{nil}
 %define _build_id_links none
 %define _find_debuginfo_dwz_opts %{nil}
 %define _binary_payload w9T0.xzdio
+%global __provides_exclude_from ^%{_libdir}/.*$
 
 Name:           ladybird
 Version:        %{tag}
@@ -50,7 +51,7 @@ BuildRequires:  libglvnd-devel
 BuildRequires:  libavcodec-free
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  xcb-util-wm-devel
-BuildRequires:  qt6-qtbase-private-devel
+BuildRequires:  qt6-qtbase-devel
 BuildRequires:  qt6-qtpositioning-devel
 BuildRequires:  qt6-qttools-devel
 BuildRequires:  qt6-qtwayland-devel
@@ -63,7 +64,7 @@ Requires:       liberation-serif-fonts
 Recommends:     libavcodec-free
 
 %description
-[PRE-ALPHA/PRE-RELEASE BUILD — DO NOT USE AS DAILY DRIVER]
+[ALPHA/PRE-RELEASE BUILD — DO NOT USE AS DAILY DRIVER]
 
 Ladybird is a truly independent web browser with a novel engine built
 from scratch based on web standards.
@@ -72,6 +73,9 @@ This package is built from official release tag %{tag}.
 
 %prep
 %autosetup -p1 -n %{name}-%{tag}
+
+# Backport upstream commit 349b655 to find Rust FFI headers under Cargo 1.100+ layout
+sed -i 's|"${CARGO_BUILD_SCRIPT_DIR}/${CRATE_NAME}-\*/root-output"|"${CARGO_BUILD_SCRIPT_DIR}/${CRATE_NAME}-*/root-output"\n    "${CARGO_BUILD_SCRIPT_DIR}/${CRATE_NAME}/*/run/root-output"|' Meta/CMake/sync_rust_ffi_header.cmake
 
 %build
 # Clear conflicting distribution flags that break vcpkg internal ports
@@ -94,7 +98,7 @@ cmake --preset Distribution -B Build \
     -DCMAKE_C_COMPILER=clang \
     -DCMAKE_CXX_COMPILER=clang++ \
     -DLADYBIRD_VERSION=%{version} \
-    -DENABLE_CI_BASELINE_CPU=ON \
+    -DLADYBIRD_BASELINE_CPU_TARGET=ON \
     -DENABLE_INSTALL_FREEDESKTOP_FILES=ON \
     -DENABLE_INSTALL_HEADERS=OFF \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
@@ -130,7 +134,7 @@ rm -rf %{buildroot}%{_datadir}/Ladybird
 rm -f %{buildroot}%{_datadir}/Lagom/*.cmake
 
 # Clean up static libraries and stray COMMIT file not needed in binary package
-rm -rf %{buildroot}%{_libdir}
+rm -f %{buildroot}%{_libdir}/*.a
 rm -f %{buildroot}%{_prefix}/COMMIT
 
 # Keep symbol tables for readable crash backtraces in pre-alpha; uncomment to strip:
@@ -144,6 +148,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.ladyb
 %doc README.md
 %{_bindir}/*
 %{_libexecdir}/*
+%{_libdir}/*
 %{_datadir}/Lagom/
 %{_datadir}/applications/org.ladybird.Ladybird.desktop
 %{_datadir}/icons/hicolor/*/apps/org.ladybird.Ladybird.*
@@ -151,6 +156,13 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.ladyb
 %{_datadir}/metainfo/org.ladybird.Ladybird.metainfo.xml
 
 %changelog
+* Mon Nov 23 2026 FurqanHun <furqanhun@proton.me> - 2026.47.7-1
+- Update to official First Alpha release tag 2026.47.7
+- Backport upstream commit 349b655 for Cargo 1.100+ FFI header path layout
+- Switch from qt6-qtbase-private-devel to public qt6-qtbase-devel
+- Include bundled dynamic runtime libraries in libdir
+- Update baseline CPU target flag to LADYBIRD_BASELINE_CPU_TARGET
+
 * Tue Nov 17 2026 FurqanHun <furqanhun@proton.me> - 2026.47.1-1
 - Update to official release tag 2026.47.1
 
