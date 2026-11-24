@@ -7,11 +7,11 @@
 %define _find_debuginfo_dwz_opts %{nil}
 %define _binary_payload w9T0.xzdio
 %global __provides_exclude_from ^%{_libdir}/.*$
-%global __requires_exclude ^(libav.*-ladybird|libswresample-ladybird|libicu.*|libdwarf|libidn2|libunistring|libdbus-1).*$
+%global __requires_exclude ^(libav.*-ladybird|libswresample-ladybird|libicu.*|libdwarf).*$
 
 Name:           ladybird
 Version:        %{tag}
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A truly independent web browser with a novel engine
 License:        BSD-2-Clause
 URL:            https://ladybird.org/
@@ -138,6 +138,11 @@ rm -f %{buildroot}%{_datadir}/Lagom/*.cmake
 rm -f %{buildroot}%{_libdir}/*.a
 rm -f %{buildroot}%{_prefix}/COMMIT
 
+# Remove duplicate shared libraries already provided by Fedora base packages
+rm -f %{buildroot}%{_libdir}/libdbus-1.so*
+rm -f %{buildroot}%{_libdir}/libunistring.so*
+rm -f %{buildroot}%{_libdir}/libidn2.so*
+
 # Keep symbol tables for readable crash backtraces in pre-alpha; uncomment to strip:
 # find %{buildroot}%{_bindir} %{buildroot}%{_libexecdir} -type f -exec strip --strip-all {} + 2>/dev/null || :
 
@@ -157,6 +162,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.ladyb
 %{_datadir}/metainfo/org.ladybird.Ladybird.metainfo.xml
 
 %changelog
+* Tue Nov 24 2026 FurqanHun <furqanhun@proton.me> - 2026.47.7-3
+- Remove duplicate system libraries (libdbus-1, libunistring, libidn2) to prevent RPM file conflicts
+
 * Tue Nov 24 2026 FurqanHun <furqanhun@proton.me> - 2026.47.7-2
 - Filter bundled libraries from Requires to resolve DNF install dependency errors
 
