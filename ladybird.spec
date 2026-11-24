@@ -7,10 +7,11 @@
 %define _find_debuginfo_dwz_opts %{nil}
 %define _binary_payload w9T0.xzdio
 %global __provides_exclude_from ^%{_libdir}/.*$
+%global __requires_exclude ^(libav.*-ladybird|libswresample-ladybird|libicu.*|libdwarf|libidn2|libunistring|libdbus-1).*$
 
 Name:           ladybird
 Version:        %{tag}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A truly independent web browser with a novel engine
 License:        BSD-2-Clause
 URL:            https://ladybird.org/
@@ -156,6 +157,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.ladyb
 %{_datadir}/metainfo/org.ladybird.Ladybird.metainfo.xml
 
 %changelog
+* Tue Nov 24 2026 FurqanHun <furqanhun@proton.me> - 2026.47.7-2
+- Filter bundled libraries from Requires to resolve DNF install dependency errors
+
 * Mon Nov 23 2026 FurqanHun <furqanhun@proton.me> - 2026.47.7-1
 - Update to official First Alpha release tag 2026.47.7
 - Backport upstream commit 349b655 for Cargo 1.100+ FFI header path layout
