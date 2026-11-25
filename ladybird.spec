@@ -1,6 +1,6 @@
 %global debug_package %{nil}
-%global tag 2026.47.7
-# Commit: 4e9acf4c02ca23239fe32224a303dcea4614562b
+%global tag 2026.47.8
+# Commit: 0be55a57cc07ed258362c631a13a10bb4f6d707a
 %global toolchain clang
 %global _lto_cflags %{nil}
 %define _build_id_links none
@@ -11,7 +11,7 @@
 
 Name:           ladybird
 Version:        %{tag}
-Release:        3%{?dist}
+Release:        1%{?dist}
 Summary:        A truly independent web browser with a novel engine
 License:        BSD-2-Clause
 URL:            https://ladybird.org/
@@ -162,6 +162,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.ladyb
 %{_datadir}/metainfo/org.ladybird.Ladybird.metainfo.xml
 
 %changelog
+* Wed Nov 25 2026 FurqanHun <furqanhun@proton.me> - 2026.47.8-1
+- Update to release tag 2026.47.8
+
 * Tue Nov 24 2026 FurqanHun <furqanhun@proton.me> - 2026.47.7-3
 - Remove duplicate system libraries (libdbus-1, libunistring, libidn2) to prevent RPM file conflicts
 
