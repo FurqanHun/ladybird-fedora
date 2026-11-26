@@ -30,9 +30,6 @@ sudo dnf copr enable furqanhun/ladybird-test
 sudo dnf install ladybird
 ```
 
-> [!NOTE]
-> Upstream Ladybird routinely deletes older CalVer release tags from GitHub whenever a new release is published to prevent users from compiling outdated alpha code. Because of this, only the latest upstream release can be fetched from GitHub archive URLs.
-
 ---
 
 ## Why Rawhide is Not Supported (Yet)

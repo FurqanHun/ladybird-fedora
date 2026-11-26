@@ -1,6 +1,6 @@
 %global debug_package %{nil}
-%global tag 2026.47.8
-# Commit: 0be55a57cc07ed258362c631a13a10bb4f6d707a
+%global tag 2026.48.0
+# Commit: 5eb636e3ecfac0bdfdc6d56558cba8ac9b71d514
 %global toolchain clang
 %global _lto_cflags %{nil}
 %define _build_id_links none
@@ -74,9 +74,6 @@ This package is built from official release tag %{tag}.
 
 %prep
 %autosetup -p1 -n %{name}-%{tag}
-
-# Backport upstream commit 349b655 to find Rust FFI headers under Cargo 1.100+ layout
-sed -i 's|"${CARGO_BUILD_SCRIPT_DIR}/${CRATE_NAME}-\*/root-output"|"${CARGO_BUILD_SCRIPT_DIR}/${CRATE_NAME}-*/root-output"\n    "${CARGO_BUILD_SCRIPT_DIR}/${CRATE_NAME}/*/run/root-output"|' Meta/CMake/sync_rust_ffi_header.cmake
 
 %build
 # Clear conflicting distribution flags that break vcpkg internal ports
@@ -162,6 +159,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/org.ladyb
 %{_datadir}/metainfo/org.ladybird.Ladybird.metainfo.xml
 
 %changelog
+* Thu Nov 26 2026 FurqanHun <furqanhun@proton.me> - 2026.48.0-1
+- Update to release tag 2026.48.0
+- Drop Cargo 1.100+ FFI header backport (included upstream)
+
 * Wed Nov 25 2026 FurqanHun <furqanhun@proton.me> - 2026.47.8-1
 - Update to release tag 2026.47.8
 
